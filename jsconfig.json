@@ -17,6 +17,9 @@
             "@context/*": [
                 "src/context/*"
             ],
+            "@redux/*": [
+                "src/redux/*"
+            ],
         }
     }
 }

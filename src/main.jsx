@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy } from "react";
 import { ThemeProvider } from "@mui/material";
 import { Provider } from "react-redux";
-import RootPlayout from "@pages/RootPlayout";
+import RootPlayout from "@pages/RootLayout";
 import ModalProvider from "@context/ModalProvider";
 import theme from "./configs/muiConfig";
 import RegisterPage from "@pages/auth/RegisterPage";

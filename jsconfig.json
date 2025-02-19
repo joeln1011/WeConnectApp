@@ -20,6 +20,9 @@
             "@redux/*": [
                 "src/redux/*"
             ],
+            "@services/*": [
+                "src/services/*"
+            ],
         }
     }
 }

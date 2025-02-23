@@ -1,10 +1,20 @@
-import { Button } from "@mui/material";
+import FriendRequests from "@components/FriendRequests";
+import PostCreation from "@components/PostCreation";
+import PostList from "@components/PostList";
+import SideBar from "@components/SideBar";
 
 function HomePage() {
   return (
-    <div>
-      <p>Home Page</p>
-      <Button variant="contained">Login</Button>
+    <div className="container">
+      <SideBar />
+      <div className="flex flex-1 flex-col gap-4">
+        <PostCreation />
+        <PostList />
+      </div>
+
+      <div className="hidden w-72 sm:block">
+        <FriendRequests />
+      </div>
     </div>
   );
 }

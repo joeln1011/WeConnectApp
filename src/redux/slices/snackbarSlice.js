@@ -10,10 +10,6 @@ export const snackbarSlice = createSlice({
   name: "snackbar",
   initialState: initialState,
   reducers: {
-    // login: (state, action) => {
-    //   state.accessToken = action.payload.accessToken;
-    //   state.refreshToken = action.payload.refreshToken;
-    // },
     openSnackbar: (state, action) => {
       state.open = true;
       state.message = action.payload.message;

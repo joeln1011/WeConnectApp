@@ -6,21 +6,21 @@ import { Alert, Snackbar } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { closeSnackbar } from "@redux/slices/snackbarSlice";
 
-const RootPlayout = () => {
+const RootLayout = () => {
   const dispatch = useDispatch();
   const { open, type, message } = useSelector((state) => {
     return state.snackbar;
   });
 
   return (
-    <div>
+    <div className="text-dark-100">
       <Suspense fallback={<p>Loading</p>}>
         <Outlet />
       </Suspense>
       <Snackbar
         open={open}
         autoHideDuration={4000}
-        onClose={dispatch(closeSnackbar)}
+        onClose={() => dispatch(closeSnackbar())}
       >
         <Alert severity={type} variant="filled" sx={{ width: "100%" }}>
           {message}
@@ -30,4 +30,4 @@ const RootPlayout = () => {
   );
 };
 
-export default RootPlayout;
+export default RootLayout;

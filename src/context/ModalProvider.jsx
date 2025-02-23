@@ -1,13 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const ModalContext = createContext();
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const useModalContext = () => {
   return useContext(ModalContext);
 };
+
 const ModalProvider = ({ children }) => {
   const [isShowing, setIsShowing] = useState(false);
   const [content, setContent] = useState();
+
   useEffect(() => {
     if (isShowing) {
       document.body.style.overflow = "hidden";
@@ -37,5 +40,4 @@ const ModalProvider = ({ children }) => {
     </ModalContext.Provider>
   );
 };
-
 export default ModalProvider;

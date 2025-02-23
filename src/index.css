@@ -8,4 +8,16 @@ body {
 @theme {
   --color-dark-100: #4B465C;
   --color-dark-200: #F8F7FA;
+  --color-primary-main: #246AA3;
+}
+
+
+@layer components {
+  .card {
+    @apply rounded bg-white p-4 shadow;
+  }
+}
+
+.container {
+  @apply flex gap-4 p-6 max-w-6xl mx-auto
 }

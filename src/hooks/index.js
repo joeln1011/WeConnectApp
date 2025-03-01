@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { useMediaQuery } from "@mui/material";
 import { logOut as logOutAction } from "@redux/slices/authSlice";
-import { useGetPostsQuery } from "@services/rootApi";
+import { useGetPostsQuery } from "@services/postApi";
 import { throttle } from "lodash";
 import { useMemo } from "react";
 import { useCallback } from "react";
@@ -37,29 +37,40 @@ export const useDetectLayout = () => {
 export const useLazyLoadPosts = () => {
   const [offset, setOffset] = useState(0);
   const limit = 10;
-  const [posts, setPosts] = useState([]);
+  //const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, isSuccess, isFetching } = useGetPostsQuery({ offset, limit });
+  const {
+    data = { ids: [], entities: [] },
+    isFetching,
+    refetch,
+  } = useGetPostsQuery({ offset, limit });
 
-  const previousDataRef = useRef();
+  console.log("useLazyLoadPosts", { data, offset });
+
+  const posts = data.ids.map((id) => data.entities[id]);
+
+  const prevPostCountRef = useRef(0);
 
   useEffect(() => {
-    if (isSuccess && data && previousDataRef.current !== data) {
-      if (!data.length) {
+    if (!isFetching && data && hasMore) {
+      const currentPostCount = data.ids.length;
+      const newFetch = currentPostCount - prevPostCountRef.current;
+      if (newFetch === 0) {
         setHasMore(false);
-        return;
+      } else {
+        prevPostCountRef.current = currentPostCount;
       }
-      previousDataRef.current = data;
-      setPosts((prevPosts) => {
-        return [...prevPosts, ...data];
-      });
     }
-  }, [data, isSuccess]);
+  }, [data, isFetching, hasMore]);
 
   const loadMore = useCallback(() => {
     setOffset((offset) => offset + limit);
   }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch, offset]);
 
   useInfiniteScroll({
     hasMore,
@@ -79,13 +90,13 @@ export const useInfiniteScroll = ({
 }) => {
   const handleScroll = useMemo(() => {
     return throttle(() => {
-      console.log("SCROLLINGGG");
-      if (!hasMore) {
-        return;
-      }
       const scrollTop = document.documentElement.scrollTop; // b
       const scrollHeight = document.documentElement.scrollHeight; // a
       const clientHeight = document.documentElement.clientHeight; // c
+
+      if (!hasMore) {
+        return;
+      }
 
       if (clientHeight + scrollTop + threshold >= scrollHeight && !isFetching) {
         loadMore();

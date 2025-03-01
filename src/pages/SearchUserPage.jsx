@@ -1,17 +1,20 @@
 import UserCard from "@components/UserCard";
-//import { useUserInfo } from "@hooks/index";
+import { useUserInfo } from "@hooks/index";
 import { useSearchUsersQuery } from "@services/rootApi";
 import { useLocation } from "react-router-dom";
 
-const SearchUserPage = () => {
+const SearchUsersPage = () => {
   const location = useLocation();
-  //const { _id } = useUserInfo();
-  const { data } = useSearchUsersQuery({
+  const { _id } = useUserInfo();
+
+  const { data, isFetching } = useSearchUsersQuery({
     limit: 10,
     offset: 0,
     searchQuery: location?.state?.searchTerm,
   });
+
   console.log({ data });
+
   return (
     <div className="container flex-col">
       <p className="text-xl font-bold">Search</p>
@@ -23,12 +26,11 @@ const SearchUserPage = () => {
             fullName={user.fullName}
             isFriend={user.isFriend}
             requestSent={user.requestSent}
-            requestRecieved={user.requestRecieved}
+            requestReceived={user.requestReceived}
           />
         ))}
       </div>
     </div>
   );
 };
-
-export default SearchUserPage;
+export default SearchUsersPage;

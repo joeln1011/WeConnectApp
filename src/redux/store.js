@@ -16,6 +16,7 @@ import {
   persistStore,
 } from "redux-persist";
 import { logOutMiddleware } from "./middleWares";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 const persistConfig = {
   key: "root",
@@ -51,5 +52,7 @@ export const store = configureStore({
     }).concat(logOutMiddleware, rootApi.middleware);
   },
 });
+
+setupListeners(store.dispatch);
 
 export const persistor = persistStore(store);

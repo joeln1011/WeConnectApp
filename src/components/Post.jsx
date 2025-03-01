@@ -1,14 +1,18 @@
 import { Comment, ThumbUp } from "@mui/icons-material";
 import { Avatar, Button } from "@mui/material";
+import classNames from "classnames";
 import dayjs from "dayjs";
 
 const Post = ({
+  id,
   fullName = "",
   createdAt,
   content = "",
   image,
   likes = [],
   comments = [],
+  isLiked = false,
+  onLike = () => {},
 }) => {
   return (
     <div className="card">
@@ -36,8 +40,19 @@ const Post = ({
         </div>
       </div>
       <div className="border-dark-300 flex border-t border-b py-1 text-sm">
-        <Button size="small" className="!text-dark-100 flex-1">
-          <ThumbUp fontSize="small" className="mr-1" /> Like
+        <Button
+          size="small"
+          className={classNames("flex-1", {
+            "text-primary-main": isLiked,
+            "!text-dark-100": !isLiked,
+          })}
+          onClick={() => onLike(id)}
+        >
+          <ThumbUp
+            fontSize="small"
+            className={classNames("mr-1", { "text-primary-main": isLiked })}
+          />
+          Like
         </Button>
         <Button size="small" className="!text-dark-100 flex-1">
           <Comment fontSize="small" className="mr-1" /> Comment

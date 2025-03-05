@@ -23,8 +23,6 @@ export const postApi = rootApi.injectEndpoints({
           args,
           { dispatch, queryFulfilled, getState },
         ) => {
-          console.log({ args });
-
           const store = getState();
           const tempId = crypto.randomUUID();
           const newPost = {
@@ -50,7 +48,6 @@ export const postApi = rootApi.injectEndpoints({
 
           try {
             const { data } = await queryFulfilled;
-            console.log({ data });
             dispatch(
               rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
                 postsAdapter.removeOne(draft, tempId);
@@ -61,8 +58,6 @@ export const postApi = rootApi.injectEndpoints({
             console.log({ err });
             patchResult.undo();
           }
-
-          console.log({ newPost });
         },
       }),
       getPosts: builder.query({
@@ -77,6 +72,8 @@ export const postApi = rootApi.injectEndpoints({
         },
         serializeQueryArgs: () => "allPosts",
         merge: (currentCache, newItems) => {
+          // gop du lieu tu request truoc do + voi du lieu moi sau nay, no luon dam bao (entity adapter)
+          // du lieu se ko bi duplicate boi vi no da co 1 he thong cac ids duy nhat
           return postsAdapter.upsertMany(currentCache, newItems.entities);
         },
         providesTags: [{ type: "POSTS" }],
@@ -92,10 +89,22 @@ export const postApi = rootApi.injectEndpoints({
           args,
           { dispatch, queryFulfilled, getState },
         ) => {
-          console.log({ args });
-
           const store = getState();
           const tempId = crypto.randomUUID();
+          // const newPost = {
+          //   _id: tempId,
+          //   likes: [],
+          //   comments: [],
+          //   content: args.get("content2"),
+          //   author: {
+          //     notifications: [],
+          //     _id: store.auth.userInfo._id,
+          //     fullName: store.auth.userInfo.fullName,
+          //   },
+          //   createdAt: new Date().toISOString(),
+          //   updatedAt: new Date().toISOString(),
+          //   __v: 0,
+          // };
 
           const patchResult = dispatch(
             rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
@@ -114,7 +123,6 @@ export const postApi = rootApi.injectEndpoints({
 
           try {
             const { data } = await queryFulfilled;
-            console.log({ data });
 
             dispatch(
               rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
@@ -142,8 +150,6 @@ export const postApi = rootApi.injectEndpoints({
             console.log({ err });
             patchResult.undo();
           }
-
-          // console.log({ newPost });
         },
       }),
       unlikePost: builder.mutation({
@@ -161,6 +167,55 @@ export const postApi = rootApi.injectEndpoints({
             method: "POST",
             body: { comment },
           };
+        },
+        onQueryStarted: async (
+          params,
+          { dispatch, queryFulfilled, getState },
+        ) => {
+          const tempId = crypto.randomUUID();
+          const store = getState();
+
+          const optimisticComment = {
+            _id: tempId,
+            comment: params.comment,
+            author: {
+              _id: store.auth.userInfo._id,
+              fullName: store.auth.userInfo.fullName,
+            },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+
+          const patchResult = dispatch(
+            rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
+              const currentPost = draft.entities[params.postId];
+
+              if (currentPost) {
+                currentPost.comments.push(optimisticComment);
+              }
+            }),
+          );
+
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              rootApi.util.updateQueryData("getPosts", "allPosts", (draft) => {
+                const currentPost = draft.entities[params.postId];
+                if (currentPost) {
+                  const commentIndex = currentPost.comments.findIndex(
+                    (comment) => comment._id === tempId,
+                  );
+
+                  if (commentIndex !== -1) {
+                    currentPost.comments[commentIndex] = data;
+                  }
+                }
+              }),
+            );
+          } catch (err) {
+            console.log({ err });
+            patchResult.undo();
+          }
         },
       }),
     };

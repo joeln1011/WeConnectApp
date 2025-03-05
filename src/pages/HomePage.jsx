@@ -11,7 +11,6 @@ function HomePage() {
         <PostCreation />
         <PostList />
       </div>
-
       <div className="hidden w-72 sm:block">
         <FriendRequests />
       </div>

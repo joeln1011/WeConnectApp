@@ -1,6 +1,9 @@
+import { socket } from "@context/SocketProvider";
 import { useTheme } from "@emotion/react";
+import {Events} from "@libs/constants"
 import { useMediaQuery } from "@mui/material";
 import { logOut as logOutAction } from "@redux/slices/authSlice";
+import { useCreateNotificationMutation } from "@services/notificationApi";
 import { useGetPostsQuery } from "@services/postApi";
 import { throttle } from "lodash";
 import { useMemo } from "react";
@@ -37,7 +40,7 @@ export const useDetectLayout = () => {
 export const useLazyLoadPosts = () => {
   const [offset, setOffset] = useState(0);
   const limit = 10;
-  //const [posts, setPosts] = useState([]);
+  // const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
   const {
@@ -55,8 +58,8 @@ export const useLazyLoadPosts = () => {
   useEffect(() => {
     if (!isFetching && data && hasMore) {
       const currentPostCount = data.ids.length;
-      const newFetch = currentPostCount - prevPostCountRef.current;
-      if (newFetch === 0) {
+      const newFetchedCount = currentPostCount - prevPostCountRef.current;
+      if (newFetchedCount === 0) {
         setHasMore(false);
       } else {
         prevPostCountRef.current = currentPostCount;
@@ -64,13 +67,13 @@ export const useLazyLoadPosts = () => {
     }
   }, [data, isFetching, hasMore]);
 
-  const loadMore = useCallback(() => {
+  const loadMore = useCallback(async () => {
     setOffset((offset) => offset + limit);
   }, []);
 
   useEffect(() => {
     refetch();
-  }, [refetch, offset]);
+  }, [offset, refetch]);
 
   useInfiniteScroll({
     hasMore,
@@ -99,6 +102,7 @@ export const useInfiniteScroll = ({
       }
 
       if (clientHeight + scrollTop + threshold >= scrollHeight && !isFetching) {
+        console.log("LOAD MOREEEEEEEE");
         loadMore();
       }
     }, throttleMs);
@@ -112,4 +116,31 @@ export const useInfiniteScroll = ({
       handleScroll.cancel();
     };
   }, [handleScroll]);
+};
+
+export const useNotifications = () => {
+  const [createNotificationMutation] = useCreateNotificationMutation();
+  const { _id: currentUserId } = useUserInfo();
+
+  async function createNotification({
+    receiverUserId,
+    postId,
+    notificationType,
+    notificationTypeId,
+  }) {
+    if (receiverUserId === currentUserId) {
+      return;
+    }
+
+    const notification = await createNotificationMutation({
+      userId: receiverUserId,
+      postId,
+      notificationType,
+      notificationTypeId,
+    }).unwrap();
+
+    socket.emit(Events.CREATE_NOTIFICATION, notification);
+  }
+
+  return { createNotification };
 };

@@ -61,8 +61,9 @@ export const rootApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   tagTypes: ["POSTS", "USERS", "PENDING_FRIEND_REQUEST"],
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
+  // refetchOnMountOrArgChange: 10,
+  // refetchOnFocus: true,
+  // refetchOnReconnect: true,
   endpoints: (builder) => {
     return {
       register: builder.mutation({
@@ -109,7 +110,7 @@ export const rootApi = createApi({
           const encodedQuery = encodeURIComponent(searchQuery.trim());
           return {
             url: `/search/users/${encodedQuery}`,
-
+            // method: 'GET',
             params: { limit, offset },
           };
         },

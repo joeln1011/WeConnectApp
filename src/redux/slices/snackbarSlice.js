@@ -15,6 +15,7 @@ export const snackbarSlice = createSlice({
       state.message = action.payload.message;
       state.type = action.payload.type;
     },
+
     closeSnackbar: () => {
       return initialState;
     },

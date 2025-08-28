@@ -1,6 +1,5 @@
 import { socket } from "@context/SocketProvider";
 import { Check, Close } from "@mui/icons-material";
-import { Avatar } from "@mui/material";
 import {
   useAcceptFriendRequestMutation,
   useCancelFriendRequestMutation,
@@ -8,8 +7,10 @@ import {
 } from "@services/friendApi";
 import { useEffect } from "react";
 import Button from "./Button";
+import { Events } from "@libs/constants";
+import UserAvatar from "./UserAvatar";
 
-const FriendRequestItem = ({ id, fullName }) => {
+const FriendRequestItem = ({ fullName, id, userAvatarSrc }) => {
   const [acceptFriendRequest, { isLoading: isAccepting }] =
     useAcceptFriendRequestMutation();
   const [cancelFriendRequest, { isLoading: isCanceling }] =
@@ -17,9 +18,7 @@ const FriendRequestItem = ({ id, fullName }) => {
 
   return (
     <div className="flex gap-2">
-      <Avatar className="!bg-primary-main">
-        {fullName?.[0]?.toUpperCase()}
-      </Avatar>
+      <UserAvatar name={fullName} src={userAvatarSrc} />
       <div>
         <p className="font-bold">{fullName}</p>
         <div className="mt-2 space-x-1">
@@ -32,6 +31,7 @@ const FriendRequestItem = ({ id, fullName }) => {
           >
             Accept
           </Button>
+
           <Button
             variant="outlined"
             size="small"
@@ -49,32 +49,34 @@ const FriendRequestItem = ({ id, fullName }) => {
 
 const FriendRequests = () => {
   const { data = [], refetch } = useGetPendingFriendRequestsQuery();
+
   useEffect(() => {
-    socket.on("friendRequestReceived", (data) => {
-      console.log("[friendRequestReceived]", { data });
+    socket.on(Events.FRIEND_REQUEST_RECEIVED, (data) => {
       if (data.from) {
         refetch();
       }
     });
+
     return () => {
-      socket.off("friendRequestReceived");
+      socket.off(Events.FRIEND_REQUEST_RECEIVED);
     };
   }, []);
+
   console.log({ data });
   return (
     <div className="card">
-      <p className="mb-4 font-bold">Friend Request</p>
+      <p className="mb-4 font-bold">Friend Requests</p>
       <div className="space-y-4">
         {data.slice(0, 3).map((user) => (
           <FriendRequestItem
             key={user._id}
             fullName={user.fullName}
             id={user._id}
+            userAvatarSrc={user.image}
           />
         ))}
       </div>
     </div>
   );
 };
-
 export default FriendRequests;

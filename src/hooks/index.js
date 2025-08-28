@@ -1,10 +1,13 @@
 import { socket } from "@context/SocketProvider";
 import { useTheme } from "@emotion/react";
-import {Events} from "@libs/constants"
+import { Events } from "@libs/constants";
 import { useMediaQuery } from "@mui/material";
 import { logOut as logOutAction } from "@redux/slices/authSlice";
 import { useCreateNotificationMutation } from "@services/notificationApi";
-import { useGetPostsQuery } from "@services/postApi";
+import {
+  useGetPostsByAuthorIdQuery,
+  useGetPostsQuery,
+} from "@services/postApi";
 import { throttle } from "lodash";
 import { useMemo } from "react";
 import { useCallback } from "react";
@@ -37,17 +40,27 @@ export const useDetectLayout = () => {
   return { isMediumLayout };
 };
 
-export const useLazyLoadPosts = () => {
+export const useLazyLoadPosts = ({ userId }) => {
   const [offset, setOffset] = useState(0);
   const limit = 10;
   // const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
   const {
-    data = { ids: [], entities: [] },
-    isFetching,
-    refetch,
-  } = useGetPostsQuery({ offset, limit });
+    data: userProfileData = { ids: [], entities: [] },
+    isFetching: userProfileFetching,
+    refetch: userProfileRefetch,
+  } = useGetPostsByAuthorIdQuery({ offset, limit, userId }, { skip: !userId });
+
+  const {
+    data: homeData = { ids: [], entities: [] },
+    isFetching: homeIsFetching,
+    refetch: homeRefetch,
+  } = useGetPostsQuery({ offset, limit }, { skip: !!userId });
+
+  const data = userId ? userProfileData : homeData;
+  const isFetching = userId ? userProfileFetching : homeIsFetching;
+  const refetch = userId ? userProfileRefetch : homeRefetch;
 
   console.log("useLazyLoadPosts", { data, offset });
 
@@ -57,15 +70,21 @@ export const useLazyLoadPosts = () => {
 
   useEffect(() => {
     if (!isFetching && data && hasMore) {
-      const currentPostCount = data.ids.length;
-      const newFetchedCount = currentPostCount - prevPostCountRef.current;
-      if (newFetchedCount === 0) {
-        setHasMore(false);
+      if (userId) {
+        if (data.ids.length === data.meta.total) {
+          setHasMore(false);
+        }
       } else {
-        prevPostCountRef.current = currentPostCount;
+        const currentPostCount = data.ids.length;
+        const newFetchedCount = currentPostCount - prevPostCountRef.current;
+        if (newFetchedCount === 0) {
+          setHasMore(false);
+        } else {
+          prevPostCountRef.current = currentPostCount;
+        }
       }
     }
-  }, [data, isFetching, hasMore]);
+  }, [data, isFetching, hasMore, userId]);
 
   const loadMore = useCallback(async () => {
     setOffset((offset) => offset + limit);

@@ -6,8 +6,8 @@ import {
   useLikePostMutation,
 } from "@services/postApi";
 
-const PostList = () => {
-  const { isFetching, posts } = useLazyLoadPosts();
+const PostList = ({ userId }) => {
+  const { isFetching, posts } = useLazyLoadPosts({ userId });
   const [likePost] = useLikePostMutation();
   const { _id } = useUserInfo();
   const [createComment] = useCreateCommentMutation();
@@ -20,6 +20,8 @@ const PostList = () => {
           key={post._id}
           id={post._id}
           fullName={post.author?.fullName}
+          avatarImage={post.author?.image}
+          authorId={post.author?._id}
           createdAt={post.createdAt}
           content={post.content}
           image={post.image}

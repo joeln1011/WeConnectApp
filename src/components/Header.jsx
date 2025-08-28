@@ -4,7 +4,6 @@ import { useDetectLayout } from "@hooks/index";
 import { Search, Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
-  Avatar,
   IconButton,
   Menu,
   MenuItem,
@@ -16,16 +15,18 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationsPanel from "./NotificationsPanel";
+import UserAvatar from "./UserAvatar";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [searchTerm, setSearchTerm] = useState();
+  const [searchTerm, setSearchTerm] = useState("");
+
   const userInfo = useUserInfo();
   const { logOut } = useLogout();
   const { isMediumLayout } = useDetectLayout();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -44,7 +45,11 @@ const Header = () => {
         horizontal: "right",
       }}
     >
-      <MenuItem>Profile</MenuItem>
+      <MenuItem>
+        <Link to={`/users/${userInfo._id}`} onClick={handleMenuClose}>
+          Profile
+        </Link>
+      </MenuItem>
       <MenuItem onClick={() => logOut()}>Logout</MenuItem>
     </Menu>
   );
@@ -79,11 +84,14 @@ const Header = () => {
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
-                    // navigate("search/user");
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      navigate("search/users", { state: { searchTerm } });
+                      navigate("/search/users", {
+                        state: {
+                          searchTerm,
+                        },
+                      });
                     }
                   }}
                   sx={{
@@ -103,9 +111,7 @@ const Header = () => {
             )}
             <NotificationsPanel />
             <IconButton size="medium" onClick={handleUserProfileClick}>
-              <Avatar className="!bg-primary-main">
-                {userInfo.fullName?.[0]?.toUpperCase()}
-              </Avatar>
+              <UserAvatar isMyAvatar={true} />
             </IconButton>
           </div>
         </Toolbar>

@@ -1,12 +1,12 @@
 import FriendRequests from "@components/FriendRequests";
 import PostCreation from "@components/PostCreation";
 import PostList from "@components/PostList";
-import SideBar from "@components/SideBar";
+import Sidebar from "@components/Sidebar";
 
 function HomePage() {
   return (
     <div className="container">
-      <SideBar />
+      <Sidebar />
       <div className="flex flex-1 flex-col gap-4">
         <PostCreation />
         <PostList />

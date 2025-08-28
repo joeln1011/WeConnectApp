@@ -1,11 +1,9 @@
 import UserCard from "@components/UserCard";
-//import { useUserInfo } from "@hooks/index";
 import { useSearchUsersQuery } from "@services/rootApi";
 import { useLocation } from "react-router-dom";
 
 const SearchUsersPage = () => {
   const location = useLocation();
-  //const { _id } = useUserInfo();
 
   const { data } = useSearchUsersQuery({
     limit: 10,
@@ -24,6 +22,7 @@ const SearchUsersPage = () => {
             key={user._id}
             id={user._id}
             fullName={user.fullName}
+            avatarImage={user.image}
             isFriend={user.isFriend}
             requestSent={user.requestSent}
             requestReceived={user.requestReceived}

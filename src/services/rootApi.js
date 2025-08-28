@@ -104,6 +104,7 @@ export const rootApi = createApi({
       }),
       getAuthUser: builder.query({
         query: () => "/auth-user",
+        providesTags: [{ type: "GET_AUTH_USER" }],
       }),
       searchUsers: builder.query({
         query: ({ limit, offset, searchQuery } = {}) => {

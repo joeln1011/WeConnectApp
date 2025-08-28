@@ -29,10 +29,6 @@ export const notificationApi = rootApi.injectEndpoints({
             },
           };
         },
-        // invalidatesTags: (result, error, args) => [
-        //   { type: "USERS", id: args },
-        //   { type: "PENDING_FRIEND_REQUEST", id: args },
-        // ],
       }),
     };
   },

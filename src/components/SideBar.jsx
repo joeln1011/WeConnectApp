@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useDetectLayout } from "@hooks/index";
+import { useDetectLayout, useUserInfo } from "@hooks/index";
 import {
   HomeOutlined,
   Hub,
@@ -20,6 +20,8 @@ const ListStyled = styled(List)`
 `;
 
 const SidebarContent = () => {
+  const { _id } = useUserInfo();
+
   return (
     <div className="flex w-64 flex-col gap-4">
       <ListStyled className="card flex flex-col">
@@ -29,7 +31,7 @@ const SidebarContent = () => {
         <Link to="/messages" className="flex items-center gap-1">
           <Message fontSize="small" /> Messenger
         </Link>
-        <Link to="/friends" className="flex items-center gap-1">
+        <Link to={`/users/${_id}/friends`} className="flex items-center gap-1">
           <People fontSize="small" /> Friends
         </Link>
         <Link to="/groups" className="flex items-center gap-1">

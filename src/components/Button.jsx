@@ -3,10 +3,12 @@ import { CircularProgress, Button as MUIButton } from "@mui/material";
 const Button = ({
   isLoading = false,
   onClick,
-  variant = "outlined",
+  variant = "outline",
   icon,
-  children,
   size,
+  children,
+  className,
+  inputProps = {},
 }) => {
   return (
     <MUIButton
@@ -14,15 +16,16 @@ const Button = ({
       size={size}
       onClick={onClick}
       disabled={isLoading}
+      className={className}
+      {...inputProps}
     >
       {isLoading ? (
         <CircularProgress className="mr-1 animate-spin" size="16px" />
       ) : (
         icon
-      )}
+      )}{" "}
       {children}
     </MUIButton>
   );
 };
-
 export default Button;

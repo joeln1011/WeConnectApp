@@ -22,13 +22,7 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: [
-    rootApi.reducerPath,
-    // dialogReducer.reducerPath,
-    // settingsReducer.reducerPath,
-    "dialog",
-    "settings",
-  ],
+  blacklist: [rootApi.reducerPath, "dialog", "settings"],
 };
 
 const persistedReducer = persistReducer(

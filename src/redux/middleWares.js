@@ -6,9 +6,10 @@ export const logOutMiddleware = (store) => {
   return (next) => {
     return (action) => {
       if (action.type === logOut.type) {
-        store.dispatch(rootApi.ulti.resetApiState());
+        store.dispatch(rootApi.util.resetApiState());
         persistor.purge();
       }
+
       return next(action);
     };
   };

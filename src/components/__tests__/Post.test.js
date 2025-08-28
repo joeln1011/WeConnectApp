@@ -15,13 +15,13 @@ describe("Post component", () => {
   test("renders the post content correctly", () => {
     const { getByText } = render(
       <Post
-        fullName="Tung HoleTex"
+        fullName="Joel Nguyen"
         content="Hello World"
         createdAt={Date.now()}
       />,
     );
 
-    expect(getByText("Tung HoleTex")).toBeInTheDocument();
+    expect(getByText("Joel Nguyen")).toBeInTheDocument();
   });
 
   test("displays the correct number of likes", () => {
@@ -53,7 +53,7 @@ describe("Post component", () => {
 
     const likeButton = screen.getByText("Like");
     fireEvent.click(likeButton);
-    expect(mockOnLike).toHaveBeenCalledWith("joelngiuyen");
+    expect(mockOnLike).toHaveBeenCalledWith("joelnguyen");
   });
 
   test("renders an image when image prop is available", () => {

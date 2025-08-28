@@ -16,7 +16,7 @@ const FormField = ({ control, label, name, type, error, Component }) => {
               name={name}
               control={control}
               type={type}
-              error={error}
+              error={error?.message}
             />
           );
         }}

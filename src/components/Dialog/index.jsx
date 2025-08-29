@@ -3,12 +3,14 @@ import { closeDialog } from "@redux/slices/dialogSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Close } from "@mui/icons-material";
 import NewPostDialog from "./configs/NewPostDialog";
+import IncomingCallDialog from "./configs/IncomingCallDialog";
 
 const DynamicContent = ({ contentType, additionalData }) => {
   switch (contentType) {
     case "NEW_POST_DIALOG":
       return <NewPostDialog userInfo={additionalData} />;
-
+    case "INCOMING_CALL_DIALOG":
+      return <IncomingCallDialog />;
     default:
       return <p></p>;
   }
@@ -39,4 +41,3 @@ const Dialog = () => {
   );
 };
 export default Dialog;
-    

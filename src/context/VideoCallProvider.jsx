@@ -13,6 +13,8 @@ import {
   useInitiateCallMutation,
 } from "@services/videoCallApi";
 import { Events } from "@libs/constants";
+import { useDispatch } from "react-redux";
+import { openDialog } from "@redux/slices/dialogSlice";
 
 const VideoCallContext = createContext({});
 
@@ -25,6 +27,8 @@ const VideoCallProvider = ({ children }) => {
   const [inCommingCall, setInCommingCall] = useState(false);
   const [callId, setCallId] = useState(null);
   const [callerInfo, setCallerInfo] = useState(null);
+
+  const dispatch = useDispatch();
 
   const pendingSDPOffer = useRef(null);
 
@@ -159,13 +163,14 @@ const VideoCallProvider = ({ children }) => {
     setInCommingCall(true);
     setCallId(data.callId);
     setCallerInfo(data.caller);
-  }, []);
 
-  useEffect(() => {
-    if (inCommingCall) {
-      acceptCall();
-    }
-  }, [inCommingCall]);
+    dispatch(
+      openDialog({
+        title: "Incoming Call",
+        contentType: "INCOMING_CALL_DIALOG",
+      }),
+    );
+  }, []);
 
   useEffect(() => {
     socket.on(Events.INCOMING_CALL, handleIncomingCall);
@@ -218,7 +223,7 @@ const VideoCallProvider = ({ children }) => {
     return res.data.callId;
   }
 
- // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function acceptCall() {
     if (!inCommingCall) return;
 
@@ -274,6 +279,7 @@ const VideoCallProvider = ({ children }) => {
         localStrea: connection?.localStream,
         remoteStream: connection?.remoteStream,
         endCurrentCall,
+        callerInfo,
       }}
     >
       {children}

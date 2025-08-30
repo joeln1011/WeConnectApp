@@ -8,6 +8,7 @@ const IncomingCallDialog = () => {
     inComingCall,
     callerInfo = {},
     acceptCall,
+    rejectCall,
     callId,
   } = useVideoCallContext();
   return (
@@ -23,14 +24,14 @@ const IncomingCallDialog = () => {
         <Button
           variant="contained"
           inputProps={{ startIcon: <Call /> }}
-          onClick={() => acceptCall(callId)}
+          onClick={acceptCall}
         >
           Accept
         </Button>
         <Button
           variant="contained"
           inputProps={{ startIcon: <CallEnd />, color: "error" }}
-          onClick={() => acceptCall(callId)}
+          onClick={rejectCall}
         >
           Reject
         </Button>

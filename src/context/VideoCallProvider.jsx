@@ -11,10 +11,12 @@ import {
   useAnswerCallMutation,
   useEndCallMutation,
   useInitiateCallMutation,
+  useRejectCallMutation,
 } from "@services/videoCallApi";
 import { Events } from "@libs/constants";
 import { useDispatch } from "react-redux";
-import { openDialog } from "@redux/slices/dialogSlice";
+import { closeDialog, openDialog } from "@redux/slices/dialogSlice";
+import { openSnackbar } from "@redux/slices/snackbarSlice";
 
 const VideoCallContext = createContext({});
 
@@ -36,6 +38,7 @@ const VideoCallProvider = ({ children }) => {
 
   const [initialCall] = useInitiateCallMutation();
   const [answerCall] = useAnswerCallMutation();
+  const [rejectIncomingCall] = useRejectCallMutation();
   const [endCall] = useEndCallMutation();
 
   const pendingICECandidate = useRef([]);
@@ -176,20 +179,12 @@ const VideoCallProvider = ({ children }) => {
     socket.on(Events.INCOMING_CALL, handleIncomingCall);
     socket.on(Events.SDP_OFFER, async (data) => {
       pendingSDPOffer.current = data.sdp;
-      //On User B
-      // if (!connection || !isInCall) return;
-
-      // const answer = await connection.handleOffer(data.sdp);
-      // socket.emit(Events.SDP_ANSWER, {
-      //   targetUserId: callerInfo._id,
-      //   sdp: answer,
-      //   callId,
-      // });
     });
     socket.on(Events.SDP_ANSWER, async (data) => {
       if (!connection || !isInCall) return;
       await connection.handleAnswer(data.sdp);
     });
+
     socket.on(Events.ICE_CANDIDATE, (data) => {
       if (!connection || !isInCall || !connection.pc.remoteDescription) {
         pendingICECandidate.current.push(data.candidate);
@@ -199,6 +194,23 @@ const VideoCallProvider = ({ children }) => {
       connection.handleNewCandidate(data.candidate);
     });
     socket.on(Events.CALL_ENDED, cleanupCall);
+    socket.on(Events.CALL_REJECTED, () => {
+      cleanupCall();
+      dispatch(
+        openSnackbar({
+          type: "info",
+          message: "Your call has been rejected",
+        }),
+      );
+    });
+    return () => {
+      socket.off(Events.INCOMING_CALL);
+      socket.off(Events.SDP_OFFER);
+      socket.off(Events.SDP_ANSWER);
+      socket.off(Events.ICE_CANDIDATE);
+      socket.off(Events.CALL_ENDED);
+      socket.off(Events.CALL_REJECTED);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callId, callerInfo?._id, connection, handleIncomingCall, isInCall]);
 
@@ -226,30 +238,41 @@ const VideoCallProvider = ({ children }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   async function acceptCall() {
     if (!inCommingCall) return;
-
-    await answerCall(callId).unwrap();
-
-    const connection = await setUpPeerConnection({
-      callId: callId,
-      remoteUserId: callerInfo._id,
-    });
-
-    if (pendingSDPOffer.current) {
-      await connection.handleOffer(pendingSDPOffer);
-
-      const answer = await connection.handleOffer(pendingSDPOffer.current);
-      socket.emit(Events.SDP_ANSWER, {
-        targetUserId: callerInfo._id,
-        sdp: answer,
-        callId,
+    try {
+      await answerCall(callId).unwrap();
+      const connection = await setUpPeerConnection({
+        callId: callId,
+        remoteUserId: callerInfo._id,
       });
-      pendingSDPOffer.current = null;
-      connection.processQueuedCandidates(connection.pc);
-    }
-    setConnection(connection);
 
-    setIsInCall(true);
-    setInCommingCall(false);
+      setConnection(connection);
+      setIsInCall(true);
+      setInCommingCall(false);
+
+      if (pendingSDPOffer.current) {
+        const answer = await connection.handleOffer(pendingSDPOffer.current);
+        socket.emit(Events.SDP_ANSWER, {
+          targetUserId: callerInfo._id,
+          sdp: answer,
+          callId,
+        });
+        pendingSDPOffer.current = null;
+      }
+      dispatch(closeDialog());
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  async function rejectCall() {
+    if (!inCommingCall) return;
+    try {
+      await rejectIncomingCall(callId).unwrap();
+
+      cleanupCall();
+      dispatch(closeDialog());
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async function endCurrentCall() {
@@ -276,10 +299,12 @@ const VideoCallProvider = ({ children }) => {
         isInCall,
         setIsInCall,
         startCall,
+        callerInfo,
+        acceptCall,
+        rejectCall,
         localStrea: connection?.localStream,
         remoteStream: connection?.remoteStream,
         endCurrentCall,
-        callerInfo,
       }}
     >
       {children}

@@ -6,6 +6,7 @@ const initialState = {
   fullWidth: true,
   title: "",
   contentType: null,
+  closeActionType: "",
   additionalData: {},
   actions: null,
 };

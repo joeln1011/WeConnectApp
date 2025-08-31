@@ -171,6 +171,7 @@ const VideoCallProvider = ({ children }) => {
       openDialog({
         title: "Incoming Call",
         contentType: "INCOMING_CALL_DIALOG",
+        closeActionType: Events.CALL_REJECTED,
       }),
     );
   }, []);

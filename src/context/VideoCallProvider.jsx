@@ -160,6 +160,24 @@ const VideoCallProvider = ({ children }) => {
     }
   };
 
+  const cleanupCall = useCallback(() => {
+    if (connection) {
+      connection.closeConnection();
+    }
+    setConnection(null);
+    setIsInCall(false);
+    setInCommingCall(false);
+    setCallId(null);
+    setCallerInfo(null);
+  }, [connection]);
+
+  const endCurrentCall = useCallback(async () => {
+    if (!isInCall) return;
+
+    await endCall(callId).unwrap();
+    cleanupCall();
+  }, [isInCall, endCall, callId, cleanupCall]);
+
   const handleIncomingCall = useCallback((data) => {
     console.log("Incoming call", data);
     setIsInCall(false);
@@ -215,25 +233,57 @@ const VideoCallProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callId, callerInfo?._id, connection, handleIncomingCall, isInCall]);
 
+  useEffect(() => {
+    if (isInCall && callId) {
+      const handleBeforeUnload = (event) => {
+        event.preventDefault();
+        endCurrentCall();
+      };
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
+    }
+  }, [callId, isInCall, endCurrentCall]);
+
   async function startCall(userId) {
-    const res = await initialCall(userId);
-    const peerConnection = await setUpPeerConnection({
-      callId: res.data.callId,
-      remoteUserId: userId,
-    });
+    try {
+      const res = await initialCall(userId);
 
-    setIsInCall(true);
-    setConnection(peerConnection);
-    setCallId(res.data.callId);
-    const offer = await peerConnection.createOffer();
+      if (res.error) {
+        dispatch(
+          openSnackbar({
+            type: "error",
+            message: res.error?.data?.message,
+          }),
+        );
+        return;
+      }
+      const peerConnection = await setUpPeerConnection({
+        callId: res.data.callId,
+        remoteUserId: userId,
+      });
 
-    socket.emit(Events.SDP_OFFER, {
-      targetUserId: userId,
-      sdp: offer,
-      callId: res.data.callId,
-    });
+      setIsInCall(true);
+      setConnection(peerConnection);
+      setCallId(res.data.callId);
+      const offer = await peerConnection.createOffer();
 
-    return res.data.callId;
+      socket.emit(Events.SDP_OFFER, {
+        targetUserId: userId,
+        sdp: offer,
+        callId: res.data.callId,
+      });
+
+      return res.data.callId;
+    } catch (err) {
+      dispatch(
+        openSnackbar({
+          type: "error",
+          message: err.message,
+        }),
+      );
+    }
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -274,24 +324,6 @@ const VideoCallProvider = ({ children }) => {
     } catch (err) {
       console.error(err);
     }
-  }
-
-  async function endCurrentCall() {
-    if (!isInCall) return;
-
-    await endCall(callId).unwrap();
-    cleanupCall();
-  }
-
-  function cleanupCall() {
-    if (connection) {
-      connection.closeConnection();
-    }
-    setConnection(null);
-    setIsInCall(false);
-    setInCommingCall(false);
-    setCallId(null);
-    setCallerInfo(null);
   }
 
   return (

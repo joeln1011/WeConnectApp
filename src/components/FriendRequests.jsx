@@ -21,7 +21,7 @@ const FriendRequestItem = ({ fullName, id, userAvatarSrc }) => {
       <UserAvatar name={fullName} src={userAvatarSrc} />
       <div>
         <p className="font-bold">{fullName}</p>
-        <div className="mt-2 space-x-1">
+        <div className="mt-2 flex items-center gap-2">
           <Button
             variant="contained"
             size="small"
@@ -31,7 +31,6 @@ const FriendRequestItem = ({ fullName, id, userAvatarSrc }) => {
           >
             Accept
           </Button>
-
           <Button
             variant="outlined"
             size="small"

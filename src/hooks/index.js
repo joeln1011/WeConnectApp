@@ -71,7 +71,7 @@ export const useLazyLoadPosts = ({ userId }) => {
   useEffect(() => {
     if (!isFetching && data && hasMore) {
       if (userId) {
-        if (data.ids.length === data.meta.total) {
+        if (data.ids.length === data.meta?.total) {
           setHasMore(false);
         }
       } else {

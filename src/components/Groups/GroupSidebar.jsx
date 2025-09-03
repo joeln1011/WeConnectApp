@@ -17,10 +17,12 @@ const SidebarContent = () => {
     <div className="flex w-64 flex-col gap-4">
       <ListStyled className="card flex flex-col">
         <Link to="/" className="flex items-center gap-1">
-          <ExploreOutlined fontSize="small" /> Explore
+          <ExploreOutlined fontSize="small" />
+          Explore
         </Link>
         <Link to="/messages" className="flex items-center gap-1">
-          <GroupOutlined fontSize="small" /> My Groups
+          <GroupOutlined fontSize="small" />
+          My Groups
         </Link>
       </ListStyled>
     </div>

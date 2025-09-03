@@ -1,7 +1,7 @@
 import FriendRequests from "@components/FriendRequests";
 import PostCreation from "@components/PostCreation";
 import PostList from "@components/PostList";
-import Sidebar from "@components/Sidebar";
+import Sidebar from "@components/SideBar";
 
 function HomePage() {
   return (

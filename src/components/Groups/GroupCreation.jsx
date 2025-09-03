@@ -54,7 +54,7 @@ export const ImageUploader = ({ image, setImage }) => {
   );
 };
 
-const PostCreation = () => {
+const GroupCreation = () => {
   const userInfo = useUserInfo();
   const dispatch = useDispatch();
 
@@ -78,4 +78,4 @@ const PostCreation = () => {
     </div>
   );
 };
-export default PostCreation;
+export default GroupCreation;

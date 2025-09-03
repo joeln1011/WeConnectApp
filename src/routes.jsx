@@ -18,6 +18,8 @@ import FriendLists from "@pages/UserProfile/FriendLists";
 import AccountSettings from "@pages/AccountSettings";
 import ChatDetail from "@components/Messages/ChatDetail";
 import GroupPage from "@pages/GroupPage";
+import GroupExplore from "@components/Groups/GroupExplore";
+import MyGroups from "@components/Groups/MyGroups";
 
 const router = createBrowserRouter([
   {
@@ -74,6 +76,20 @@ const router = createBrowserRouter([
           {
             path: "/groups",
             element: <GroupPage />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="explore" replace />,
+              },
+              {
+                path: "explore",
+                element: <GroupExplore />,
+              },
+              {
+                path: "my-groups",
+                element: <MyGroups />,
+              },
+            ],
           },
         ],
       },

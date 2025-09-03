@@ -44,17 +44,17 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isError) {
-      dispatch(openSnackbar({ type: "error", message: error.data.message }));
+      dispatch(openSnackbar({ type: "error", message: error.data?.message }));
     }
     if (isSuccess) {
-      dispatch(openSnackbar({ message: data.message }));
+      dispatch(openSnackbar({ message: data?.message }));
       navigate("/verify-otp", {
         state: {
           email: getValues("email"),
         },
       });
     }
-  }, [isError, error, dispatch, isSuccess, data.message, navigate, getValues]);
+  }, [isError, error, dispatch, isSuccess, data?.message, navigate, getValues]);
 
   return (
     <div>

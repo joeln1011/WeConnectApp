@@ -1,4 +1,4 @@
-import GroupSidebar from "@components/Groups/GroupSideBar";
+import GroupSidebar from "@components/Groups/GroupSidebar";
 
 function GroupPage() {
   return (

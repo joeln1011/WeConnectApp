@@ -1,6 +1,11 @@
+import Button from "@components/Button";
 import styled from "@emotion/styled";
 import { useDetectLayout } from "@hooks/index";
-import { ExploreOutlined, GroupOutlined } from "@mui/icons-material";
+import {
+  ExploreOutlined,
+  GroupAddOutlined,
+  GroupOutlined,
+} from "@mui/icons-material";
 import { Drawer, List } from "@mui/material";
 import { toggleDrawer } from "@redux/slices/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +19,7 @@ const ListStyled = styled(List)`
 
 const SidebarContent = () => {
   return (
-    <div className="flex w-64 flex-col gap-4">
+    <div className="flex w-64 flex-col gap-2">
       <ListStyled className="card flex flex-col">
         <Link to="explore" className="flex items-center gap-1">
           <ExploreOutlined fontSize="small" />
@@ -25,6 +30,9 @@ const SidebarContent = () => {
           My Groups
         </Link>
       </ListStyled>
+      <Button variant="contained" icon={<GroupAddOutlined fontSize="14px" />}>
+        Create New Group
+      </Button>
     </div>
   );
 };

@@ -19,5 +19,5 @@ body {
 }
 
 .container {
-  @apply flex gap-4 p-6 max-w-6xl mx-auto
+  @apply flex gap-4 p-6 max-w-6xl mx-auto min-h-96;
 }

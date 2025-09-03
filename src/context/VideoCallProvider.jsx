@@ -178,21 +178,24 @@ const VideoCallProvider = ({ children }) => {
     cleanupCall();
   }, [isInCall, endCall, callId, cleanupCall]);
 
-  const handleIncomingCall = useCallback((data) => {
-    console.log("Incoming call", data);
-    setIsInCall(false);
-    setInCommingCall(true);
-    setCallId(data.callId);
-    setCallerInfo(data.caller);
+  const handleIncomingCall = useCallback(
+    (data) => {
+      console.log("Incoming call", data);
+      setIsInCall(false);
+      setInCommingCall(true);
+      setCallId(data.callId);
+      setCallerInfo(data.caller);
 
-    dispatch(
-      openDialog({
-        title: "Incoming Call",
-        contentType: "INCOMING_CALL_DIALOG",
-        closeActionType: Events.CALL_REJECTED,
-      }),
-    );
-  }, []);
+      dispatch(
+        openDialog({
+          title: "Incoming Call",
+          contentType: "INCOMING_CALL_DIALOG",
+          closeActionType: Events.CALL_REJECTED,
+        }),
+      );
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     socket.on(Events.INCOMING_CALL, handleIncomingCall);

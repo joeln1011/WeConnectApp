@@ -7,15 +7,12 @@ import { useDispatch } from "react-redux";
 import UserAvatar from "./UserAvatar";
 
 export const ImageUploader = ({ image, setImage }) => {
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      // Do something with the files
-      console.log({ acceptedFiles });
+  const onDrop = useCallback((acceptedFiles) => {
+    // Do something with the files
+    console.log({ acceptedFiles });
 
-      setImage(acceptedFiles[0]);
-    },
-    [setImage],
-  );
+    setImage(acceptedFiles[0]);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

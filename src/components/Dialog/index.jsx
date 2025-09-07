@@ -6,6 +6,7 @@ import { useVideoCallContext } from "@context/VideoCallProvider";
 import { Events } from "@libs/constants";
 import NewPostDialog from "./configs/NewPostDialog";
 import IncomingCallDialog from "./configs/IncomingCallDialog";
+import NewGroupDialog from "./configs/NewGroupDialog";
 
 const DynamicContent = ({ contentType, additionalData }) => {
   switch (contentType) {
@@ -13,6 +14,8 @@ const DynamicContent = ({ contentType, additionalData }) => {
       return <NewPostDialog userInfo={additionalData} />;
     case "INCOMING_CALL_DIALOG":
       return <IncomingCallDialog />;
+    case "NEW_GROUP_DIALOG":
+      return <NewGroupDialog />;
     default:
       return <p></p>;
   }

@@ -1,15 +1,11 @@
-import Button from "@components/Button";
 import styled from "@emotion/styled";
 import { useDetectLayout } from "@hooks/index";
-import {
-  ExploreOutlined,
-  GroupAddOutlined,
-  GroupOutlined,
-} from "@mui/icons-material";
+import { ExploreOutlined, GroupOutlined } from "@mui/icons-material";
 import { Drawer, List } from "@mui/material";
 import { toggleDrawer } from "@redux/slices/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import GroupCreation from "./GroupCreation";
 
 const ListStyled = styled(List)`
   padding: 16px;
@@ -30,9 +26,7 @@ const SidebarContent = () => {
           My Groups
         </Link>
       </ListStyled>
-      <Button variant="contained" icon={<GroupAddOutlined fontSize="14px" />}>
-        Create New Group
-      </Button>
+      <GroupCreation />
     </div>
   );
 };

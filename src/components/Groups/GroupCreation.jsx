@@ -1,10 +1,11 @@
 import { useUserInfo } from "@hooks";
-import { Chip, Stack, TextField } from "@mui/material";
+import { Chip, Stack } from "@mui/material";
 import { openDialog } from "@redux/slices/dialogSlice";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch } from "react-redux";
-import UserAvatar from "./UserAvatar";
+import Button from "@components/Button";
+import { GroupAddOutlined } from "@mui/icons-material";
 
 export const ImageUploader = ({ image, setImage }) => {
   const onDrop = useCallback(
@@ -59,23 +60,22 @@ const GroupCreation = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className="card flex gap-2">
-      <UserAvatar isMyAvatar={true} />
-      <TextField
-        className="flex-1"
-        size="small"
-        placeholder="What's on your mind?"
-        onClick={() =>
-          dispatch(
-            openDialog({
-              title: "Create Post",
-              contentType: "NEW_POST_DIALOG",
-              additionalData: userInfo,
-            }),
-          )
-        }
-      />
-    </div>
+    <Button
+      variant="contained"
+      icon={<GroupAddOutlined fontSize="14px" />}
+      size="small"
+      onClick={() => {
+        dispatch(
+          openDialog({
+            title: "Create Group",
+            contentType: "NEW_GROUP_DIALOG",
+            additionalData: userInfo,
+          }),
+        );
+      }}
+    >
+      Create New Group
+    </Button>
   );
 };
 export default GroupCreation;

@@ -4,14 +4,28 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
+  TextareaAutosize,
 } from "@mui/material";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { useCreateGroupMutation } from "@services/groupApi";
 import FormField from "@components/FormField";
 import TextInput from "@components/FormInputs/TextInput";
+import { closeDialog } from "@redux/slices/dialogSlice";
+import { useDispatch } from "react-redux";
+import { openSnackbar } from "@redux/slices/snackbarSlice";
 
+const Textarea = (props) => {
+  return (
+    <TextareaAutosize
+      minRows={3}
+      className="mt-4 w-full rounded border border-gray-400 p-2"
+      {...props}
+    />
+  );
+};
 const NewGroupDialog = () => {
+  const dispatch = useDispatch();
   const [createGroup, { isLoading }] = useCreateGroupMutation();
   const formSchema = yup.object().shape({
     name: yup
@@ -33,12 +47,14 @@ const NewGroupDialog = () => {
 
   const onSubmit = (formData) => {
     createGroup(formData);
+    dispatch(closeDialog());
+    dispatch(openSnackbar({ message: "Group created successfully!" }));
+    
   };
-
   return (
     <div>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent className="flex flex-col gap-4">
           <FormField
             name="name"
             label="Group Name"
@@ -50,12 +66,12 @@ const NewGroupDialog = () => {
             name="description"
             label="Group Description"
             control={control}
-            Component={TextInput}
+            Component={Textarea}
             error={errors["description"]}
           />
         </DialogContent>
         <DialogActions className="!px-6 !pt-0 !pb-5">
-          <Button fullWidth variant="contained">
+          <Button fullWidth variant="contained" type="submit">
             {isLoading && <CircularProgress size="16px" className="mr-1" />}
             Create Group
           </Button>

@@ -15,8 +15,9 @@ const GroupExplore = () => {
     <div>
       <p className="mb-4 text-xl font-bold">Explore</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {data.groups ||
-          [].map(({ group }) => <GroupCard key={group._id} group={group} />)}
+        {(data.groups || []).map((group) => (
+          <GroupCard key={group._id} groupInfo={group} />
+        ))}
       </div>
     </div>
   );

@@ -4,25 +4,32 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Button from "@components/Button";
 import { CardContent } from "@mui/material";
-import { useUserInfo } from "@hooks/index";
-const GroupCard = ({ groupInfor = {} }) => {
-  const { _id } = useUserInfo();
-  const isJoined = (groupInfor?.members || []).includes(_id);
+const GroupCard = ({ groupInfo = {} }) => {
+  const isJoined = groupInfo.userMembership?.isMember;
   return (
-    <Card>
+    <Card sx={{ display: "flex", flexDirection: "column" }}>
       <CardMedia
         component="img"
         height="140"
         image="https://placehold.co/160x90"
         alt="group-banner"
       />
-      <CardContent>
-        <Typography variant="h6" component="div">
-          {groupInfor?.name || "Group Name"}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {groupInfor?.description || "Group Description"}
-        </Typography>
+      <CardContent
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          flex: 1,
+        }}
+      >
+        <Box>
+          <Typography variant="h6" component="div">
+            {groupInfo?.name || "Group Name"}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {groupInfo?.description || "Group Description"}
+          </Typography>
+        </Box>
         <Box display="flex" gap={1}>
           {isJoined ? (
             <Button

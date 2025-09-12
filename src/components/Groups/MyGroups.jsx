@@ -1,13 +1,9 @@
-import { useGetMyGroupsQuery } from "@services/groupApi";
 import GroupList from "./GroupList";
+import { useLazyLoadMyGroups } from "@hooks";
 
 const MyGroups = () => {
-  const { data = {} } = useGetMyGroupsQuery({
-    status: "Active",
-    limit: 10,
-    offset: 0,
-  });
-  return <GroupList groups={data.groups} title="My Groups" />;
+  const { groups } = useLazyLoadMyGroups({ status: "Active", limit: 10 });
+  return <GroupList groups={groups} title="My Groups" />;
 };
 
 export default MyGroups;

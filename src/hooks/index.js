@@ -8,6 +8,8 @@ import {
   useGetPostsByAuthorIdQuery,
   useGetPostsQuery,
 } from "@services/postApi";
+import { useGetMyGroupsQuery } from "@services/groupApi";
+
 import { throttle } from "lodash";
 import { useMemo } from "react";
 import { useCallback } from "react";
@@ -43,7 +45,6 @@ export const useDetectLayout = () => {
 export const useLazyLoadPosts = ({ userId }) => {
   const [offset, setOffset] = useState(0);
   const limit = 10;
-  // const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
   const {
@@ -162,4 +163,45 @@ export const useNotifications = () => {
   }
 
   return { createNotification };
+};
+
+export const useLazyLoadMyGroups = ({ status = "Active", limit = 10 } = {}) => {
+  const [offset, setOffset] = useState(0);
+  const [groups, setGroups] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+
+  const { data = {}, isFetching } = useGetMyGroupsQuery({
+    status,
+    limit,
+    offset,
+  });
+
+  useEffect(() => {
+    const page = data.groups || [];
+    if (!isFetching && Array.isArray(page)) {
+      setGroups((prev) => {
+        const seen = new Set(prev.map((g) => g._id));
+        const merged = [...prev];
+        page.forEach((g) => {
+          if (g && !seen.has(g._id)) merged.push(g);
+        });
+        return merged;
+      });
+      if (page.length < limit) setHasMore(false);
+    }
+  }, [data, isFetching, limit]);
+
+  const loadMore = useCallback(() => {
+    if (!isFetching && hasMore) setOffset((o) => o + limit);
+  }, [isFetching, hasMore, limit]);
+
+  useEffect(() => {
+    setGroups([]);
+    setOffset(0);
+    setHasMore(true);
+  }, [status]);
+
+  useInfiniteScroll({ hasMore, loadMore, isFetching });
+
+  return { groups, isFetching, hasMore, loadMore };
 };

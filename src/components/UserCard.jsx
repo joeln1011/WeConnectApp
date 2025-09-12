@@ -10,6 +10,7 @@ import {
   useAcceptFriendRequestMutation,
   useCancelFriendRequestMutation,
   useSendFriendRequestMutation,
+  useUnFriendMutation,
 } from "@services/friendApi";
 import { Link } from "react-router-dom";
 import { socket } from "@context/SocketProvider";
@@ -29,20 +30,38 @@ export function UserActionButtons({
     useAcceptFriendRequestMutation();
   const [cancelFriendRequest, { isLoading: isCanceling }] =
     useCancelFriendRequestMutation();
-
+  const [unfriend, { isLoading: isUnfriending }] = useUnFriendMutation();
   if (isFriend) {
     return (
-      <div className="mt-2 space-x-1">
-        <MyButton variant="outlined" size="small">
-          <PersonRemove className="mr-1" fontSize="small" /> Unfriend
-        </MyButton>
-        <MyButton
-          variant="contained"
-          size="small"
-          inputProps={{ component: Link, to: `/messages/${userId}` }}
-        >
-          <MessageOutlined className="mr-1" fontSize="small" /> Message
-        </MyButton>
+      <div className="flex gap-2">
+        <div className="mt-2 flex items-center gap-2">
+          <MyButton
+            variant="outlined"
+            size="small"
+            onClick={async () => {
+              try {
+                await unfriend(userId).unwrap();
+              } catch (e) {
+                console.error("Unfriend failed", e);
+              }
+            }}
+            disabled={isUnfriending}
+          >
+            {isUnfriending ? (
+              <CircularProgress className="mr-1" size="16px" />
+            ) : (
+              <PersonRemove className="mr-1" fontSize="small" />
+            )}
+            Unfriend
+          </MyButton>
+          <MyButton
+            variant="contained"
+            size="small"
+            inputProps={{ component: Link, to: `/messages/${userId}` }}
+          >
+            <MessageOutlined className="mr-1" fontSize="small" /> Message
+          </MyButton>
+        </div>
       </div>
     );
   }
@@ -57,7 +76,7 @@ export function UserActionButtons({
 
   if (requestReceived) {
     return (
-      <div className="mt-2 space-x-1">
+      <div className="mt-2 flex items-center gap-2">
         <MyButton
           variant="contained"
           size="small"

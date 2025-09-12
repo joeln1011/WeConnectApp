@@ -88,6 +88,21 @@ export const friendApi = rootApi.injectEndpoints({
               ]
             : [{ type: "GET_FRIENDS", id: "LIST" }],
       }),
+      unFriend: builder.mutation({
+        query: (userId) => {
+          return {
+            url: "/friends/unfriend",
+            method: "POST",
+            body: {
+              friendId: userId,
+            },
+          };
+        },
+        invalidatesTags: (result, error, args) => [
+          { type: "USERS", id: args },
+          { type: "UN_FRIEND", id: args },
+        ],
+      }),
     };
   },
 });
@@ -99,4 +114,5 @@ export const {
   useCancelFriendRequestMutation,
   useGetFriendsQuery,
   useGetFriendsByUserIdQuery,
+  useUnFriendMutation,
 } = friendApi;

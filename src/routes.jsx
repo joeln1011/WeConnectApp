@@ -20,6 +20,9 @@ import ChatDetail from "@components/Messages/ChatDetail";
 import GroupPage from "@pages/GroupPage";
 import GroupExplore from "@components/Groups/GroupExplore";
 import MyGroups from "@components/Groups/MyGroups";
+import GroupDetail from "@components/Groups/GroupDetail";
+import GroupMembers from "@components/Groups/GroupMembers";
+import GroupDiscussion from "@components/Groups/GroupDiscussion";
 
 const router = createBrowserRouter([
   {
@@ -88,6 +91,24 @@ const router = createBrowserRouter([
               {
                 path: "my-groups",
                 element: <MyGroups />,
+              },
+              {
+                path: ":goupId",
+                element: <GroupDetail />,
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to="discussion" replace />,
+                  },
+                  {
+                    path: "discussion",
+                    element: <GroupDiscussion />,
+                  },
+                  {
+                    path: "members",
+                    element: <GroupMembers />,
+                  },
+                ],
               },
             ],
           },

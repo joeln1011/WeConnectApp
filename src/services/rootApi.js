@@ -60,7 +60,15 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const rootApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["POSTS", "USERS", "PENDING_FRIEND_REQUEST"],
+  tagTypes: [
+    "POSTS",
+    "USERS",
+    "PENDING_FRIEND_REQUEST",
+    "CONVERSATIONS",
+    "MESSAGES",
+    "GET_MY_GROUPS",
+    "GET_ALL_GROUPS",
+  ],
   // refetchOnMountOrArgChange: 10,
   // refetchOnFocus: true,
   // refetchOnReconnect: true,

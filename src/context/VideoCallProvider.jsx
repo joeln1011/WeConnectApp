@@ -289,7 +289,6 @@ const VideoCallProvider = ({ children }) => {
     }
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function acceptCall() {
     if (!inCommingCall) return;
     try {

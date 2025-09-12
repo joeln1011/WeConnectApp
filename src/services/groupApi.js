@@ -51,6 +51,29 @@ export const groupApi = rootApi.injectEndpoints({
             : [{ type: "GET_MY_GROUPS", id: "LIST" }];
         },
       }),
+      requestJoinGroup: builder.mutation({
+        query: (groupId) => {
+          return {
+            url: `/groups/${groupId}/join`,
+            method: "POST",
+          };
+        },
+      }),
+      leaveGroup: builder.mutation({
+        query: (groupId) => {
+          return {
+            url: `/groups/${groupId}/leave`,
+            method: "POST",
+          };
+        },
+        invalidatesTags: (result, error, args) => {
+          return [
+            { type: "GET_ALL_GROUPS", id: "LIST" },
+            { type: "GET_ALL_GROUPS", id: args },
+            { type: "GET_MY_GROUPS", id: "LIST" },
+          ];
+        },
+      }),
     };
   },
 });
@@ -59,4 +82,6 @@ export const {
   useCreateGroupMutation,
   useGetGroupsQuery,
   useGetMyGroupsQuery,
+  useLeaveGroupMutation,
+  useRequestJoinGroupMutation,
 } = groupApi;

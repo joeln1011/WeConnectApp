@@ -4,8 +4,18 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Button from "@components/Button";
 import { CardContent } from "@mui/material";
-const GroupCard = ({ groupInfo = {} }) => {
-  const isJoined = groupInfo.userMembership?.isMember;
+
+const GroupCard = ({
+  id,
+  name,
+  description,
+  isJoined,
+  onJoinClick,
+  onLeaveClick,
+  isJoining,
+  isLeaving,
+  isOwner,
+}) => {
   return (
     <Card sx={{ display: "flex", flexDirection: "column" }}>
       <CardMedia
@@ -24,30 +34,39 @@ const GroupCard = ({ groupInfo = {} }) => {
       >
         <Box>
           <Typography variant="h6" component="div">
-            {groupInfo?.name || "Group Name"}
+            {name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {groupInfo?.description || "Group Description"}
+            {description}
           </Typography>
         </Box>
         <Box display="flex" gap={1}>
-          {isJoined ? (
-            <Button
-              size="small"
-              variant="contained"
-              inputProps={{ color: "error", fullWidth: true }}
-            >
-              Leave
-            </Button>
-          ) : (
-            <Button
-              size="small"
-              variant="contained"
-              inputProps={{ fullWidth: true }}
-            >
-              Join
-            </Button>
-          )}
+          {!isOwner &&
+            (isJoined ? (
+              <Button
+                size="small"
+                variant="contained"
+                inputProps={{ color: "error", fullWidth: true }}
+                onClick={() => {
+                  onLeaveClick(id, name);
+                }}
+                isLoading={isLeaving}
+              >
+                Leave
+              </Button>
+            ) : (
+              <Button
+                size="small"
+                variant="contained"
+                inputProps={{ fullWidth: true }}
+                onClick={() => {
+                  onJoinClick(id, name);
+                }}
+                isLoading={isJoining}
+              >
+                Join
+              </Button>
+            ))}
         </Box>
       </CardContent>
     </Card>

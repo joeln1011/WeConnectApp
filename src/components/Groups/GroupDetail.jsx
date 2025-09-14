@@ -1,12 +1,15 @@
 import { Tab, Tabs } from "@mui/material";
 import { theme } from "@configs/muiConfig";
 import { Link, Outlet, useLocation, useParams } from "react-router-dom";
+import { useGetGroupDetailQuery } from "@services/groupApi";
 
 function GroupDetail() {
   const { groupId } = useParams();
   const location = useLocation();
-  const data = {};
 
+  const { data = {}, isLoading, isFetching } = useGetGroupDetailQuery(groupId); // useGetGroupDetailQuery(groupId);
+
+  console.log("GROUP INFO", data);
   const TABS = [
     {
       path: "discussion",
@@ -38,7 +41,7 @@ function GroupDetail() {
           className="h-36 w-full object-cover sm:h-80"
           src={data.coverImage ?? "https://placehold.co/1920x540"}
         />
-
+        <p className="text-2xl font-bold">{data.name}</p>
         <div className="pt-40 sm:pt-28">
           <div className="border-dark-300 border-t px-6 py-2">
             <Tabs

@@ -13,6 +13,7 @@ export const socket = io("https://api.holetex.com", {
 
 const SocketContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useModalContext = () => {
   return useContext(SocketContext);
 };
@@ -49,7 +50,6 @@ const SocketProvider = ({ children }) => {
       socket.off("disconnect");
       socket.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -60,7 +60,15 @@ const SocketProvider = ({ children }) => {
 
       dispatch(
         rootApi.util.updateQueryData("getNotifications", undefined, (draft) => {
-          draft.notifications.unshift(data);
+          let newData = { ...data };
+          if (newData.userName) {
+            newData.author = {
+              _id: newData.userId,
+              fullName: newData.userName,
+              image: newData.userImage,
+            };
+          }
+          draft.notifications.unshift(newData);
         }),
       );
 
@@ -72,7 +80,38 @@ const SocketProvider = ({ children }) => {
       );
     });
 
-    
+    socket.on(Events.SEND_MESSAGE, (data) => {
+      console.log("[SEND_MESSAGE]", { data });
+
+      dispatch(
+        rootApi.util.updateQueryData(
+          "getMessages",
+          { userId: data.sender._id },
+          (draft) => {
+            draft.messages.push(data);
+          },
+        ),
+      );
+
+      dispatch(
+        rootApi.util.updateQueryData("getConversations", undefined, (draft) => {
+          let currentConversationIndex = draft.findIndex(
+            (message) =>
+              message.sender._id === data.sender._id ||
+              message.receiver._id === data.sender._id,
+          );
+
+          console.log({ currentConversationIndex });
+
+          if (currentConversationIndex !== -1) {
+            draft.splice(currentConversationIndex, 1);
+          }
+
+          draft.unshift(data);
+          // draft.messages.push(data);
+        }),
+      );
+    });
 
     return () => {
       socket.off(Events.CREATE_NOTIFICATION_REQUEST);

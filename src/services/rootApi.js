@@ -66,8 +66,10 @@ export const rootApi = createApi({
     "PENDING_FRIEND_REQUEST",
     "CONVERSATIONS",
     "MESSAGES",
+
     "GET_MY_GROUPS",
     "GET_ALL_GROUPS",
+    "GET_GROUP_DETAIL",
   ],
   // refetchOnMountOrArgChange: 10,
   // refetchOnFocus: true,

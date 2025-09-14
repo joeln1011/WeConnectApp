@@ -5,6 +5,7 @@ import { useUserInfo } from "@hooks/index";
 import { useGetUserInfoByIdQuery } from "@services/userApi";
 import { UserActionButtons } from "@components/UserCard";
 import UserAvatar from "@components/UserAvatar";
+import { useMemo } from "react";
 
 function UserProfile() {
   const { userId } = useParams();
@@ -12,6 +13,12 @@ function UserProfile() {
   const { _id } = useUserInfo();
   const { data = {}, isLoading, isFetching } = useGetUserInfoByIdQuery(userId);
   console.log({ data, isLoading, isFetching });
+  const uniqueFriendsCount = useMemo(() => {
+    const ids = new Set(
+      (data?.friends || []).map((f) => f?._id).filter(Boolean),
+    );
+    return ids.size || data.totalFriends || 0;
+  }, [data?.friends, data.totalFriends]);
 
   const isMyProfile = userId === _id;
 
@@ -62,7 +69,7 @@ function UserProfile() {
               </p>
               <p className="text-dark-400 text-sm">
                 <Link to={`/users/${userId}/friends`}>
-                  {data.totalFriends} Friends
+                  {uniqueFriendsCount} Friends
                 </Link>
               </p>
             </div>

@@ -32,6 +32,16 @@ export const groupApi = rootApi.injectEndpoints({
             : [{ type: "GET_ALL_GROUPS", id: "LIST" }];
         },
       }),
+      getGroupDetail: builder.query({
+        query: (id) => {
+          return {
+            url: `/groups/${id}`,
+          };
+        },
+        providesTags: (result, error, params) => {
+          return { type: "GET_GROUP_DETAIL", id: params };
+        },
+      }),
       getMyGroups: builder.query({
         query: (limit, offset, status) => {
           return {
@@ -84,4 +94,5 @@ export const {
   useGetMyGroupsQuery,
   useLeaveGroupMutation,
   useRequestJoinGroupMutation,
+  useGetGroupDetailQuery,
 } = groupApi;

@@ -39,7 +39,7 @@ export const groupApi = rootApi.injectEndpoints({
           };
         },
         providesTags: (result, error, params) => {
-          return { type: "GET_GROUP_DETAIL", id: params };
+          return [{ type: "GET_GROUP_DETAIL", id: params }];
         },
       }),
       getMyGroups: builder.query({

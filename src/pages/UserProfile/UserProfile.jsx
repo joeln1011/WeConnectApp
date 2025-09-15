@@ -72,7 +72,7 @@ function UserProfile() {
                   {uniqueFriendsCount} Friends
                 </Link>
               </p>
-            </div>
+            </div>  
           </div>
           <div>
             {!isMyProfile && (

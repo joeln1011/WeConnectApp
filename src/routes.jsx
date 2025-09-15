@@ -93,7 +93,7 @@ const router = createBrowserRouter([
                 element: <MyGroups />,
               },
               {
-                path: ":goupId",
+                path: ":groupId",
                 element: <GroupDetail />,
                 children: [
                   {

@@ -2,15 +2,14 @@ import { Tab, Tabs } from "@mui/material";
 import { theme } from "@configs/muiConfig";
 import { Link, Outlet, useLocation, useParams } from "react-router-dom";
 import { useGetGroupDetailQuery } from "@services/groupApi";
-import Button from "@components/Button";
-import { Logout } from "@mui/icons-material";
 import { GroupActionButtons } from "./GroupActionButtons";
+import GroupJoinRequests from "./GroupJoinRequests";
+import GroupBannerUploader from "./GroupBannerUploader";
 
 function GroupDetail() {
   const { groupId } = useParams();
   const location = useLocation();
-
-  const { data = {}, isLoading, isFetching } = useGetGroupDetailQuery(groupId); // useGetGroupDetailQuery(groupId);
+  const { data = {} } = useGetGroupDetailQuery(groupId);
 
   console.log("GROUP INFO", data);
 
@@ -37,24 +36,43 @@ function GroupDetail() {
   };
 
   const currentTabIndex = getActiveTabIndex(location.pathname);
+
+  // Owner => Admin => Moderator => Member
+
   const isMember = data.userMembership?.isMember;
+  const isRequestSent = !isMember && data.userMembership?.status === "Pending";
+  const canViewPendingRequests = ["Owner", "Admin", "Moderator"].includes(
+    data.userMembership?.role,
+  );
+  const canUpdateGroup = ["Owner", "Admin"].includes(data.userMembership?.role);
+
   return (
-    <div className="flexflex-col">
+    <div className="flex flex-col gap-4">
       <div className="card relative p-0">
-        <img
-          className="h-36 w-full object-cover sm:h-80"
-          src={data.coverImage ?? "https://placehold.co/1920x540"}
-        />
+        <div className="relative">
+          <img
+            className="h-36 w-full object-cover sm:h-80"
+            src={data.coverImage ?? "https://placehold.co/1920x540"}
+          />
+          {canUpdateGroup && (
+            <GroupBannerUploader
+              className="absolute right-6 bottom-3"
+              groupId={groupId}
+            />
+          )}
+        </div>
         <div className="flex justify-between gap-2 p-6">
           <div>
             <p className="text-2xl font-bold">{data.name}</p>
-            <p>
-              {data.memberCount}
-              {data.memberCount === 1 ? " member" : "members"}
-            </p>
+            <p>{data.memberCount} members</p>
           </div>
           <div>
-            <GroupActionButtons />
+            <GroupActionButtons
+              id={data._id}
+              isMember={isMember}
+              isRequestSent={isRequestSent}
+              role={data.userMembership?.role}
+            />
           </div>
         </div>
         {isMember ? (
@@ -97,19 +115,22 @@ function GroupDetail() {
           </div>
         ) : (
           <div className="border-dark-300 border-t px-6 py-2">
-            <p>
-              Join this group to participate in discussions and connect with
-              members.
-            </p>
+            <p>Join this group to discuss and connect with other memberes</p>
           </div>
         )}
       </div>
       {isMember && (
-        <div className="flex">
-          <div className="flex-3">
-            <Outlet context={{ userData: data }} />
+        <div className="flex gap-4">
+          <div className="flex-[3]">
+            <Outlet context={{ groupId: groupId }} />
           </div>
-          <div className="flex-1">Right side bar</div>
+          <div className="flex-[2] space-y-4">
+            <div className="card">
+              <p className="mb-3 text-lg font-bold">Description</p>
+              <p>{data.description}</p>
+            </div>
+            {canViewPendingRequests && <GroupJoinRequests groupId={groupId} />}
+          </div>
         </div>
       )}
     </div>

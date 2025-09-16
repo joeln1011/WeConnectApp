@@ -14,7 +14,7 @@ export const groupApi = rootApi.injectEndpoints({
         invalidatesTags: [{ type: "GET_ALL_GROUPS", id: "LIST" }],
       }),
       getGroups: builder.query({
-        query: (limit, offset, searchQuery) => {
+        query: ({ limit, offset, searchQuery }) => {
           return {
             url: "/groups",
             params: { limit, offset, searchQuery },
@@ -38,12 +38,12 @@ export const groupApi = rootApi.injectEndpoints({
             url: `/groups/${id}`,
           };
         },
-        providesTags: (result, error, params) => {
-          return [{ type: "GET_GROUP_DETAIL", id: params }];
+        providesTags: (result, error, args) => {
+          return [{ type: "GET_GROUP_DETAIL", id: args }];
         },
       }),
       getMyGroups: builder.query({
-        query: (limit, offset, status) => {
+        query: ({ limit, offset, status }) => {
           return {
             url: "/user/groups",
             params: { limit, offset, status },
@@ -68,6 +68,12 @@ export const groupApi = rootApi.injectEndpoints({
             method: "POST",
           };
         },
+        invalidatesTags: (result, error, args) => [
+          { type: "GET_ALL_GROUPS", id: "LIST" },
+          { type: "GET_ALL_GROUPS", id: args },
+          { type: "GET_MY_GROUPS", id: "LIST" },
+          { type: "GET_GROUP_DETAIL", id: args },
+        ],
       }),
       leaveGroup: builder.mutation({
         query: (groupId) => {
@@ -81,6 +87,79 @@ export const groupApi = rootApi.injectEndpoints({
             { type: "GET_ALL_GROUPS", id: "LIST" },
             { type: "GET_ALL_GROUPS", id: args },
             { type: "GET_MY_GROUPS", id: "LIST" },
+            { type: "GET_GROUP_DETAIL", id: args },
+          ];
+        },
+      }),
+      getGroupPendingRequests: builder.query({
+        query: (groupId) => `/groups/${groupId}/pending-requests`,
+        providesTags: (result) =>
+          result?.pendingRequests
+            ? [
+                ...result.pendingRequests.map(({ _id }) => ({
+                  type: "PENDING_GROUP_REQUEST",
+                  id: _id,
+                })),
+                { type: "PENDING_GROUP_REQUEST", id: "LIST" },
+              ]
+            : [{ type: "PENDING_GROUP_REQUEST", id: "LIST" }],
+      }),
+      respondGroupPendingRequest: builder.mutation({
+        query: ({ groupId, userId, approve }) => {
+          return {
+            url: `/groups/${groupId}/respond-request`,
+            method: "POST",
+            body: {
+              userId,
+              approve,
+            },
+          };
+        },
+        invalidatesTags: (result, error, args) => [
+          { type: "PENDING_GROUP_REQUEST", id: "LIST" },
+          { type: "GET_GROUP_DETAIL", id: args.groupId },
+        ],
+      }),
+      uploadGroupBanner: builder.mutation({
+        query: ({ groupId, formData }) => {
+          return {
+            url: `/groups/${groupId}/image`,
+            method: "POST",
+            body: formData,
+          };
+        },
+        invalidatesTags: (result, error, args) => {
+          return [{ type: "GET_GROUP_DETAIL", id: args.groupId }];
+        },
+      }),
+      getGroupMembers: builder.query({
+        query: (groupId) => {
+          return {
+            url: `/groups/${groupId}/members`,
+          };
+        },
+        providesTags: (result) =>
+          result?.members
+            ? [
+                ...result.members.map(({ _id }) => ({
+                  type: "GET_GROUP_MEMBERS",
+                  id: _id,
+                })),
+                { type: "GET_GROUP_MEMBERS", id: "LIST" },
+              ]
+            : [{ type: "GET_GROUP_MEMBERS", id: "LIST" }],
+      }),
+      updateMember: builder.mutation({
+        query: ({ groupId, userId }) => {
+          return {
+            url: `/groups/${groupId}/members/${userId}`,
+            method: "PUT",
+          };
+        },
+        invalidatesTags: (result, error, args) => {
+          return [
+            { type: "GET_GROUP_DETAIL", id: args.groupId },
+            { type: "GET_GROUP_MEMBERS", id: "LIST" },
           ];
         },
       }),
@@ -95,4 +174,9 @@ export const {
   useLeaveGroupMutation,
   useRequestJoinGroupMutation,
   useGetGroupDetailQuery,
+  useGetGroupPendingRequestsQuery,
+  useRespondGroupPendingRequestMutation,
+  useUploadGroupBannerMutation,
+  useGetGroupMembersQuery,
+  useUpdateMemberMutation,
 } = groupApi;

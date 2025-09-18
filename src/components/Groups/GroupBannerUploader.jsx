@@ -6,16 +6,19 @@ import { useDropzone } from "react-dropzone";
 const GroupBannerUploader = ({ className, groupId }) => {
   const [uploadPhoto, { isLoading }] = useUploadGroupBannerMutation();
 
-  const onDrop = useCallback((acceptedFiles) => {
-    // Do something with the files
-    console.log({ acceptedFiles });
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      // Do something with the files
+      console.log({ acceptedFiles });
 
-    const formData = new FormData();
-    formData.append("isCover", true);
-    formData.append("image", acceptedFiles[0]);
+      const formData = new FormData();
+      formData.append("isCover", true);
+      formData.append("image", acceptedFiles[0]);
 
-    uploadPhoto({ groupId, formData });
-  }, []);
+      uploadPhoto({ groupId, formData });
+    },
+    [groupId, uploadPhoto],
+  );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,

@@ -59,7 +59,7 @@ const FriendRequests = () => {
     return () => {
       socket.off(Events.FRIEND_REQUEST_RECEIVED);
     };
-  }, []);
+  }, [refetch]);
 
   console.log({ data });
   return (

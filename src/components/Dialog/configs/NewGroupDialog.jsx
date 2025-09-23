@@ -14,6 +14,7 @@ import TextInput from "@components/FormInputs/TextInput";
 import { closeDialog } from "@redux/slices/dialogSlice";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "@redux/slices/snackbarSlice";
+import { useNavigate } from "react-router-dom";
 
 const Textarea = (props) => {
   return (
@@ -27,6 +28,8 @@ const Textarea = (props) => {
 const NewGroupDialog = () => {
   const dispatch = useDispatch();
   const [createGroup, { isLoading }] = useCreateGroupMutation();
+  const navigate = useNavigate();
+
   const formSchema = yup.object().shape({
     name: yup
       .string()
@@ -45,11 +48,13 @@ const NewGroupDialog = () => {
     defaultValues: { name: "", description: "" },
   });
 
-  const onSubmit = (formData) => {
+  const onSubmit = async (formData) => {
+    const response = await createGroup(formData);
+
     createGroup(formData);
     dispatch(closeDialog());
     dispatch(openSnackbar({ message: "Group created successfully!" }));
-    
+    navigate(`/groups/${response?.data?._id}`);
   };
   return (
     <div>

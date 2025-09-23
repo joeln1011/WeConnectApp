@@ -6,6 +6,7 @@ import { Alert, Snackbar } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { closeSnackbar } from "@redux/slices/snackbarSlice";
 import Loading from "@components/Loading";
+import Dialog from "@components/Dialog";
 
 const RootLayout = () => {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const RootLayout = () => {
           {message}
         </Alert>
       </Snackbar>
+      <Dialog />
     </div>
   );
 };

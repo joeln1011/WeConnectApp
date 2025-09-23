@@ -6,7 +6,6 @@ import { ThemeProvider } from "@mui/material";
 import { Provider } from "react-redux";
 import { persistor, store } from "@redux/store";
 import { PersistGate } from "redux-persist/integration/react";
-import Dialog from "@components/Dialog";
 import Loading from "@components/Loading";
 import router from "./routes";
 import VideoCallProvider from "@context/VideoCallProvider";
@@ -17,7 +16,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <ThemeProvider theme={theme}>
         <VideoCallProvider>
           <RouterProvider router={router} />
-          <Dialog />
         </VideoCallProvider>
       </ThemeProvider>
     </PersistGate>

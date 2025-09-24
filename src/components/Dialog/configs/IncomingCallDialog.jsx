@@ -4,13 +4,7 @@ import { Call, CallEnd } from "@mui/icons-material";
 import { Button } from "@mui/material";
 
 const IncomingCallDialog = () => {
-  const {
-    inComingCall,
-    callerInfo = {},
-    acceptCall,
-    rejectCall,
-    callId,
-  } = useVideoCallContext();
+  const { callerInfo = {}, acceptCall, rejectCall } = useVideoCallContext();
   return (
     <div className="flex flex-col items-center p-6">
       <UserAvatar

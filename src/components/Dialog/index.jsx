@@ -7,6 +7,7 @@ import { Events } from "@libs/constants";
 import NewPostDialog from "./configs/NewPostDialog";
 import IncomingCallDialog from "./configs/IncomingCallDialog";
 import NewGroupDialog from "./configs/NewGroupDialog";
+import NewGroupPostDialog from "./configs/NewGroupPostDialog";
 
 const DynamicContent = ({ contentType, additionalData }) => {
   switch (contentType) {
@@ -16,6 +17,13 @@ const DynamicContent = ({ contentType, additionalData }) => {
       return <IncomingCallDialog />;
     case "NEW_GROUP_DIALOG":
       return <NewGroupDialog />;
+    case "NEW_GROUP_POST_DIALOG":
+      return (
+        <NewGroupPostDialog
+          groupId={additionalData.groupId}
+          userInfo={additionalData.userInfo}
+        />
+      );
     default:
       return <p></p>;
   }

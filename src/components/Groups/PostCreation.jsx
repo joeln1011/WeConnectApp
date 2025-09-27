@@ -8,15 +8,12 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 export const ImageUploader = ({ image, setImage }) => {
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      // Do something with the files
-      console.log({ acceptedFiles });
+  const onDrop = useCallback((acceptedFiles) => {
+    // Do something with the files
+    console.log({ acceptedFiles });
 
-      setImage(acceptedFiles[0]);
-    },
-    [setImage],
-  );
+    setImage(acceptedFiles[0]);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -59,6 +56,8 @@ const PostCreation = () => {
   const { groupId } = useParams();
   const userInfo = useUserInfo();
   const dispatch = useDispatch();
+
+  console.log("PostCreation", { userInfo });
 
   return (
     <div className="card flex gap-2">

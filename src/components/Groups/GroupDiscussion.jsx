@@ -1,5 +1,5 @@
-import GroupPostList from "./GroupPostList";
 import { useOutletContext } from "react-router-dom";
+import GroupPostList from "./GroupPostList";
 import PostCreation from "./PostCreation";
 
 const GroupDiscussion = () => {

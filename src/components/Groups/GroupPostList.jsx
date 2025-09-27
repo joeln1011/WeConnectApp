@@ -1,19 +1,18 @@
-import { useNotifications, useUserInfo } from "@hooks/index";
-import {
-  useCreateCommentMutation,
-  useLikePostMutation,
-} from "@services/postApi";
+import { useUserInfo } from "@hooks/index";
 import { useLazyLoadGroupPosts } from "@hooks/useLazyLoadGroupPosts";
 import Post from "@components/Post";
 import Loading from "@components/Loading";
+import {
+  useCreateGroupCommentMutation,
+  useLikeGroupPostMutation,
+} from "@services/groupPostApi";
 
 const GroupPostList = ({ groupId }) => {
   const { isFetching, posts } = useLazyLoadGroupPosts({ groupId });
 
-  const [likePost] = useLikePostMutation();
+  const [likePost] = useLikeGroupPostMutation();
   const { _id } = useUserInfo();
-  const [createComment] = useCreateCommentMutation();
-  const { createNotification } = useNotifications();
+  const [createComment] = useCreateGroupCommentMutation();
 
   return (
     <div className="flex flex-col gap-4">
@@ -31,25 +30,10 @@ const GroupPostList = ({ groupId }) => {
           comments={post.comments}
           isLiked={post.likes.some((like) => like.author?._id === _id)}
           onLike={async (postId) => {
-            const res = await likePost(postId).unwrap();
-
-            createNotification({
-              receiverUserId: post.author?._id,
-              postId: post._id,
-              notificationType: "like",
-              notificationTypeId: res._id,
-            });
+            await likePost(postId).unwrap();
           }}
           onComment={async ({ comment, postId }) => {
-            console.log({ comment, postId });
-            const res = await createComment({ comment, postId }).unwrap();
-
-            createNotification({
-              receiverUserId: post.author?._id,
-              postId: post._id,
-              notificationType: "comment",
-              notificationTypeId: res._id,
-            });
+            await createComment({ comment, postId }).unwrap();
           }}
         />
       ))}

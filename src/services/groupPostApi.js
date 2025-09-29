@@ -154,12 +154,10 @@ export const groupPostApi = rootApi.injectEndpoints({
               { groupId: arg.groupId },
             ]),
           ];
-          console.log({ cachingPairs });
 
           cachingPairs.forEach(([endpoint, key]) => {
             const patchResult = dispatch(
               rootApi.util.updateQueryData(endpoint, key, (draft) => {
-                console.log({ endpoint, key, draft });
                 const currentPost = draft.entities[args];
                 if (currentPost) {
                   currentPost.likes.push({
@@ -212,12 +210,54 @@ export const groupPostApi = rootApi.injectEndpoints({
           }
         },
       }),
+      // ...existing code...
       unlikeGroupPost: builder.mutation({
         query: (postId) => {
           return {
             url: `/groups/posts/${postId}/likes`,
             method: "DELETE",
           };
+        },
+        onQueryStarted: async (
+          postId,
+          { dispatch, queryFulfilled, getState },
+        ) => {
+          const store = getState();
+          const userId = store.auth.userInfo?._id;
+
+          const userProfilePostsArgs = rootApi.util.selectCachedArgsForQuery(
+            store,
+            "getPostsByGroupId",
+          );
+
+          const cachingPairs = [
+            ...userProfilePostsArgs.map((arg) => [
+              "getPostsByGroupId",
+              { groupId: arg.groupId },
+            ]),
+          ];
+
+          const patchResults = [];
+          cachingPairs.forEach(([endpoint, key]) => {
+            const patchResult = dispatch(
+              rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                const currentPost = draft.entities[postId];
+                if (currentPost?.likes?.length) {
+                  currentPost.likes = currentPost.likes.filter(
+                    (like) => like?.author?._id !== userId,
+                  );
+                }
+              }),
+            );
+            patchResults.push(patchResult);
+          });
+
+          try {
+            await queryFulfilled;
+          } catch (err) {
+            console.log({ err });
+            patchResults.forEach((p) => p.undo());
+          }
         },
       }),
       createGroupComment: builder.mutation({

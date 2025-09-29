@@ -5,12 +5,14 @@ import Loading from "@components/Loading";
 import {
   useCreateGroupCommentMutation,
   useLikeGroupPostMutation,
+  useUnlikeGroupPostMutation,
 } from "@services/groupPostApi";
 
 const GroupPostList = ({ groupId }) => {
   const { isFetching, posts } = useLazyLoadGroupPosts({ groupId });
 
   const [likePost] = useLikeGroupPostMutation();
+  const [unlikePost] = useUnlikeGroupPostMutation();
   const { _id } = useUserInfo();
   const [createComment] = useCreateGroupCommentMutation();
 
@@ -31,6 +33,9 @@ const GroupPostList = ({ groupId }) => {
           isLiked={post.likes.some((like) => like.author?._id === _id)}
           onLike={async (postId) => {
             await likePost(postId).unwrap();
+          }}
+          onUnlike={async (postId) => {
+            await unlikePost(postId).unwrap();
           }}
           onComment={async ({ comment, postId }) => {
             await createComment({ comment, postId }).unwrap();

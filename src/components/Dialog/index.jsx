@@ -8,6 +8,7 @@ import NewPostDialog from "./configs/NewPostDialog";
 import IncomingCallDialog from "./configs/IncomingCallDialog";
 import NewGroupDialog from "./configs/NewGroupDialog";
 import NewGroupPostDialog from "./configs/NewGroupPostDialog";
+import ConfirmDialog from "./configs/ConfirmDialog";
 
 const DynamicContent = ({ contentType, additionalData }) => {
   switch (contentType) {
@@ -24,6 +25,8 @@ const DynamicContent = ({ contentType, additionalData }) => {
           userInfo={additionalData.userInfo}
         />
       );
+    case "CONFIRM_DIALOG":
+      return <ConfirmDialog {...additionalData} />;
     default:
       return <p></p>;
   }

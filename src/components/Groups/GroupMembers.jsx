@@ -1,13 +1,13 @@
 import Loading from "@components/Loading";
 import { useGetGroupMembersQuery } from "@services/groupApi";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import GroupMemberCard from "./GroupMemberCard";
 //import { useMemo } from "react";
 
 const GroupMembers = () => {
   const { groupId } = useParams();
   const { data, isFetching } = useGetGroupMembersQuery(groupId);
-
+  const { currentUserRole } = useOutletContext();
   // const uniqueFriends = useMemo(() => {
   //   const seen = new Set();
   //   return (data?.friends || []).filter((u) => {
@@ -29,7 +29,8 @@ const GroupMembers = () => {
             key={user._id}
             fullName={user.fullName}
             avatarImage={user.image}
-            role={role}
+            targetUserRole={role}
+            currentUserRole={currentUserRole}
           />
         ))}
       </div>

@@ -122,7 +122,12 @@ function GroupDetail() {
       {isMember && (
         <div className="flex gap-4">
           <div className="flex-[3]">
-            <Outlet context={{ groupId: groupId }} />
+            <Outlet
+              context={{
+                groupId: groupId,
+                currentUserRole: data.userMembership?.role,
+              }}
+            />
           </div>
           <div className="flex-[2] space-y-4">
             <div className="card">

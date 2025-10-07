@@ -3,14 +3,23 @@ import { useUserInfo } from "@hooks/index";
 import { Link } from "react-router-dom";
 import MemberActionButtons from "./MemberActionButtons";
 
-const GroupMemberCard = ({ id, fullName = "", avatarImage, role }) => {
+const GroupMemberCard = ({
+  id,
+  fullName = "",
+  avatarImage,
+  targetUserRole,
+  currentUserRole,
+}) => {
   const { _id } = useUserInfo();
   const isMyself = _id === id;
   return (
     <div className="card relative flex flex-col items-center">
       {!isMyself && (
         <div className="absolute top-2 right-2">
-          <MemberActionButtons />
+          <MemberActionButtons
+            currentUserRole={currentUserRole}
+            targetUserRole={targetUserRole}
+          />
         </div>
       )}
       <UserAvatar
@@ -21,7 +30,7 @@ const GroupMemberCard = ({ id, fullName = "", avatarImage, role }) => {
       <Link to={`/users/${id}`}>
         <p className="text-lg font-bold">{fullName}</p>
       </Link>
-      <p className="text-sm text-gray-500">Role: {role}</p>
+      <p className="text-sm text-gray-500">Role: {targetUserRole}</p>
     </div>
   );
 };

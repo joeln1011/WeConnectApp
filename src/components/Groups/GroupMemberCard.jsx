@@ -9,6 +9,7 @@ const GroupMemberCard = ({
   avatarImage,
   targetUserRole,
   currentUserRole,
+  groupId,
 }) => {
   const { _id } = useUserInfo();
   const isMyself = _id === id;
@@ -17,6 +18,8 @@ const GroupMemberCard = ({
       {!isMyself && (
         <div className="absolute top-2 right-2">
           <MemberActionButtons
+            groupId={groupId}
+            targetUserId={id}
             currentUserRole={currentUserRole}
             targetUserRole={targetUserRole}
           />

@@ -150,10 +150,11 @@ export const groupApi = rootApi.injectEndpoints({
             : [{ type: "GET_GROUP_MEMBERS", id: "LIST" }],
       }),
       updateMember: builder.mutation({
-        query: ({ groupId, userId }) => {
+        query: ({ groupId, userId, role }) => {
           return {
             url: `/groups/${groupId}/members/${userId}`,
             method: "PUT",
+            body: { role },
           };
         },
         invalidatesTags: (result, error, args) => {

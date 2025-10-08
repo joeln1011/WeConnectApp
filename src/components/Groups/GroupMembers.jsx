@@ -31,6 +31,7 @@ const GroupMembers = () => {
             avatarImage={user.image}
             targetUserRole={role}
             currentUserRole={currentUserRole}
+            groupId={groupId}
           />
         ))}
       </div>

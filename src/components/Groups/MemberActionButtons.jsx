@@ -7,8 +7,12 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
+import { openDialog } from "@redux/slices/dialogSlice";
 import { openSnackbar } from "@redux/slices/snackbarSlice";
-import { useUpdateMemberMutation } from "@services/groupApi";
+import {
+  useRemoveMemberMutation,
+  useUpdateMemberMutation,
+} from "@services/groupApi";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -48,6 +52,7 @@ const MemberActionButtons = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const [roleMenuEl, setRoleMenuEl] = useState(null);
   const [updateMemberRole] = useUpdateMemberMutation();
+  const [removeMember] = useRemoveMemberMutation();
   const dispatch = useDispatch();
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -104,10 +109,40 @@ const MemberActionButtons = ({
       dispatch(
         openSnackbar({
           type: "error",
-          message: err?.data?.message || err.message || "Failed to update role",
+          message: err?.data?.message || "Failed to update role",
         }),
       );
     }
+  };
+
+  const handleRemoveMember = () => {
+    dispatch(
+      openDialog({
+        title: "Remove Member",
+        contentType: "CONFIRM_DIALOG",
+        additionalData: {
+          message:
+            "Are you sure you want to remove this member from the group?",
+          onConfirm: async () => {
+            try {
+              await removeMember({ groupId, userId: targetUserId });
+              dispatch(
+                openSnackbar({
+                  message: " Member removed successfully",
+                }),
+              );
+            } catch (error) {
+              dispatch(
+                openSnackbar({
+                  type: "error",
+                  message: error?.data?.message || "Failed to remove member",
+                }),
+              );
+            }
+          },
+        },
+      }),
+    );
   };
 
   return (
@@ -138,11 +173,11 @@ const MemberActionButtons = ({
           </MenuItem>
         )}
         {canRemoveMember() && (
-          <MenuItem>
+          <MenuItem onClick={handleRemoveMember}>
             <ListItemIcon>
               <PersonRemove fontSize="small" sx={{ color: "error.main" }} />
             </ListItemIcon>
-            <ListItemText>Change from Group</ListItemText>
+            <ListItemText>Remove from Group</ListItemText>
           </MenuItem>
         )}
       </Menu>

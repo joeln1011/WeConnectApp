@@ -118,6 +118,7 @@ export const groupApi = rootApi.injectEndpoints({
         invalidatesTags: (result, error, args) => [
           { type: "PENDING_GROUP_REQUEST", id: "LIST" },
           { type: "GET_GROUP_DETAIL", id: args.groupId },
+          { type: "GET_GROUP_MEMBERS", id: "LIST" },
         ],
       }),
       uploadGroupBanner: builder.mutation({
@@ -164,6 +165,20 @@ export const groupApi = rootApi.injectEndpoints({
           ];
         },
       }),
+      removeMember: builder.mutation({
+        query: ({ groupId, userId }) => {
+          return {
+            url: `/groups/${groupId}/members/${userId}`,
+            method: "DELETE",
+          };
+        },
+        invalidatesTags: (result, error, args) => {
+          return [
+            { type: "GET_GROUP_DETAIL", id: args.groupId },
+            { type: "GET_GROUP_MEMBERS", id: "LIST" },
+          ];
+        },
+      }),
     };
   },
 });
@@ -180,4 +195,5 @@ export const {
   useUploadGroupBannerMutation,
   useGetGroupMembersQuery,
   useUpdateMemberMutation,
+  useRemoveMemberMutation,
 } = groupApi;

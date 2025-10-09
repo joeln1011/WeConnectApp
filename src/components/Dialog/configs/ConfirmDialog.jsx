@@ -16,7 +16,7 @@ const ConfirmDialog = ({ message, onConfirm }) => {
   };
   return (
     <>
-      <DialogContent>
+      <DialogContent className="!py-6">
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
